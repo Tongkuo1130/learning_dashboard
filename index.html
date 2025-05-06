@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编程实训学习分析仪表盘</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <div class="header-title">编程实训学习分析仪表盘</div>
+            <div class="header-actions">
+                <div id="current-time"></div>
+            </div>
+        </div>
+
+        <div class="navigation-tabs">
+            <button class="nav-tab active" onclick="showSection('basic')">基础概览</button>
+            <button class="nav-tab" onclick="showSection('analysis')">深度分析</button>
+        </div>
+
+        <div id="basic-section" class="content-section active-section">
+            <div class="card" id="overview">
+                <div class="card-header">
+                    <div class="card-title">学习概览</div>
+                    <div class="card-extra">本周数据</div>
+                </div>
+                <div class="data-grid">
+                    <div class="data-card" onclick="askAI('请分析我的挑战完成情况')">
+                        <div class="data-label">完成挑战</div>
+                        <div class="data-value">24</div>
+                        <div class="data-change positive"><i class="fas fa-arrow-up"></i> 12%</div>
+                    </div>
+                    <div class="data-card" onclick="askAI('请分析我的平均得分情况')">
+                        <div class="data-label">平均得分</div>
+                        <div class="data-value">86.5</div>
+                        <div class="data-change positive"><i class="fas fa-arrow-up"></i> 3.2%</div>
+                    </div>
+                    <div class="data-card" onclick="askAI('请分析我的调试次数变化')">
+                        <div class="data-label">调试次数</div>
+                        <div class="data-value">142</div>
+                        <div class="data-change negative"><i class="fas fa-arrow-down"></i> 5.7%</div>
+                    </div>
+                    <div class="data-card" onclick="askAI('请分析我的讨论参与情况')">
+                        <div class="data-label">讨论参与</div>
+                        <div class="data-value">18</div>
+                        <div class="data-change positive"><i class="fas fa-arrow-up"></i> 21%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="progress">
+                <div class="card-header">
+                    <div class="card-title">课程进度</div>
+                    <div class="card-extra">当前课程: Python编程基础</div>
+                </div>
+                <div class="chart-container" id="progressChart"></div>
+            </div>
+
+            <div class="card ai-guide-card" id="ai-guide">
+                <div class="card-header">
+                    <div class="card-title">学习助手</div>
+                    <div class="card-extra">随时为您解答</div>
+                </div>
+                <div class="ai-guide-content">
+                    <div class="ai-avatar">
+                        <img src="./image/ai-avatar.png" alt="AI助手" class="ai-image">
+                    </div>
+                    <div class="ai-tips">
+                        <p>点击图表或按钮获取学习建议</p>
+                        <button class="ai-chat-button" onclick="openAIChat()">
+                            <i class="fas fa-comment-alt"></i> 咨询
+                        </button>
+                    </div>
+                </div>
+            </div>                     
+
+            <div class="card" id="score-trend">
+                <div class="card-header">
+                    <div class="card-title">得分趋势</div>
+                    <div class="card-extra">近30天</div>
+                </div>
+                <div class="chart-container" id="scoreTrendChart"></div>
+            </div>
+
+            <div class="card" id="activity">
+                <div class="card-header">
+                    <div class="card-title">学习活跃度</div>
+                    <div class="card-extra">最近7天</div>
+                </div>
+                <div class="chart-container" id="activityChart"></div>
+            </div>
+
+            <div class="card" id="submission-timeline">
+                <div class="card-header">
+                    <div class="card-title">最近提交</div>
+                    <div class="card-extra">时间线</div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item clickable" onclick="askAI('请分析我最近的提交情况')">
+                        <div class="timeline-time">14:25</div> 
+                        <div class="timeline-status status-success"></div> 
+                        <div class="timeline-content">完成挑战#32: 递归优化，得分95</div>
+                    </div>
+                    <div class="timeline-item clickable" onclick="askAI('为什么我的挑战#31会失败')">
+                        <div class="timeline-time">13:42</div> 
+                        <div class="timeline-status status-error"></div> 
+                        <div class="timeline-content">挑战#31提交失败: 运行时错误</div>
+                    </div>
+                    <div class="timeline-item clickable" onclick="askAI('挑战#30部分通过的原因')">
+                        <div class="timeline-time">13:15</div> 
+                        <div class="timeline-status status-warning"></div> 
+                        <div class="timeline-content">挑战#30部分通过: 3/5测试用例</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="recommendation">
+                <div class="card-header">
+                    <div class="card-title">个性化推荐</div>
+                    <div class="card-extra">根据你的学习情况</div>
+                </div>
+                <div class="recommend-list">
+                    <div class="recommend-item clickable" onclick="askAI('请解释为什么推荐挑战#33')">
+                        <div class="recommend-title">挑战#33: 高级递归优化</div> 
+                        <div class="recommend-meta"><span>匹配度: 92%</span> <span>预计耗时: 45分钟</span></div>
+                    </div>
+                    <div class="recommend-item clickable" onclick="askAI('请解释为什么推荐这个视频')">
+                        <div class="recommend-title">视频: 递归与迭代的区别</div> 
+                        <div class="recommend-meta"><span>匹配度: 95%</span> <span>时长: 12分钟</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analysis-section" class="content-section">
+            <div class="card" id="code-ability">
+                <div class="card-header">
+                    <div class="card-title">代码能力分析</div>
+                    <div class="card-extra">能力维度评估</div>
+                </div>
+                <div class="chart-container" id="codeAbilityChart"></div>
+            </div>
+
+            <div class="card" id="error-analysis">
+                <div class="card-header">
+                    <div class="card-title">错误分析</div>
+                    <div class="card-extra">最近100次提交</div>
+                </div>
+                <div class="chart-container" id="errorAnalysisChart"></div>
+            </div>
+
+            <div class="card" id="debug-behavior">
+                <div class="card-header">
+                    <div class="card-title">调试行为分析</div>
+                    <div class="card-extra">调试效率</div>
+                </div>
+                <div class="chart-container" id="debugBehaviorChart"></div>
+            </div>
+
+            <div class="card" id="heatmap">
+                <div class="card-header">
+                    <div class="card-title">学习时间分布</div>
+                    <div class="card-extra">最近4周</div>
+                </div>
+                <div class="chart-container" id="heatmapChart"></div>
+            </div>
+
+            <div class="card" id="problem-pattern">
+                <div class="card-header">
+                    <div class="card-title">问题模式识别</div>
+                    <div class="card-extra">常见错误聚类</div>
+                </div>
+                <div class="chart-container" id="problemPatternChart"></div>
+            </div>
+
+            <div class="card" id="knowledge-graph">
+                <div class="card-header">
+                    <div class="card-title">知识掌握图谱</div>
+                    <div class="card-extra">概念关联分析</div>
+                </div>
+                <div class="chart-container" id="knowledgeGraphChart"></div>
+            </div>
+        </div>
+
+
+
+        <!-- AI聊天面板 -->
+        <div class="ai-assistant" id="aiAssistant">
+            <div class="ai-header">
+                <div class="ai-title">
+                    <img src="./image/ai-icon.png" alt="AI助手" class="ai-mini-image">
+                    <span>编程学习助手</span>
+                </div>
+                <button class="ai-close" onclick="closeAIChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ai-body">
+                <div class="ai-messages" id="aiMessages">
+                    <div class="ai-message bot-message">
+                        您好！我是编程学习助手，可以：
+                        <ul>
+                            <li>解释图表数据</li>
+                            <li>分析学习问题</li>
+                            <li>推荐学习路径</li>
+                            <li>解答代码疑问</li>
+                        </ul>
+                        点击任意图表或数据点获取详细分析。
+                    </div>
+                </div>
+                <div class="ai-input">
+                    <input type="text" id="aiQuestion" placeholder="输入您的问题...">
+                    <button onclick="askAI()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
